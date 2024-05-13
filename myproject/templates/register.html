@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes slideInFromLeft {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0%);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInFromRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0%);
+                opacity: 1;
+            }
+        }
+
+        .feature-card {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            border-radius: 8px;
+            background: white;
+            text-align: center;
+            margin: 0.5rem;
+        }
+        .feature-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .left-side-animate {
+            animation: slideInFromLeft 1s forwards;
+            position: relative;
+        }
+
+        .right-side-animate {
+            animation: slideInFromRight 1s forwards;
+        }
+        
+        .back-button {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            z-index: 50;
+            color: #666;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .back-button:hover {
+            color: #444;
+        }
+
+        input[type="text"], input[type="email"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin-top: 6px;
+            margin-bottom: 0px;
+            border-radius: 12px;
+            border: 2px solid #ccc;
+            font-size: 1rem;
+        }
+
+        #username {
+            margin-top: 10px; /* Extra margin to move it down */
+        }
+
+        button[type="submit"] {
+            width: 80%;
+            padding: 12px;
+            border: none;
+            background-color: #4a4e69;
+            color: white;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #373f51;
+        }
+    </style>
+</head>
+<body class="flex min-h-screen relative">
+    <!-- Left Side -->
+    <div class="w-3/5 bg-[rgb(214,214,255)] flex flex-col items-center justify-center text-white text-xl p-10 left-side-animate" style="min-height: 100vh;">
+        <!-- Back Button on Top Left within the Left Side -->
+        <a href="{% url 'home' %}" class="back-button">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/>
+            </svg>
+            <span class="ml-2">Back</span>
+        </a>
+        <h1 class="text-6xl font-bold mb-8 text-black">Join us for:</h1>
+        <div class="flex justify-center items-stretch w-full flex-wrap gap-4">
+            <!-- Feature Card 1 -->
+            <div class="feature-card shadow-lg flex-1 min-w-[250px] max-w-[30%]">
+                <div class="text-3xl">🤖</div>
+                <h2 class="text-xl font-bold mt-4 mb-2 text-black">AI Editing</h2>
+                <p class="text-sm text-gray-600">Experience automated editing that enhances your workflow.</p>
+            </div>
+            <!-- Feature Card 2 -->
+            <div class="feature-card shadow-lg flex-1 min-w-[250px] max-w-[30%]">
+                <div class="text-3xl">🎨</div>
+                <h2 class="text-xl font-bold mt-4 mb-2 text-black">Creative Tools</h2>
+                <p class="text-sm text-gray-600">Leverage AI to unlock new creative potentials in your projects.</p>
+            </div>
+            <!-- Feature Card 3 -->
+            <div class="feature-card shadow-lg flex-1 min-w-[250px] max-w-[30%]">
+                <div class="text-3xl">📊</div>
+                <h2 class="text-xl font-bold mt-4 mb-2 text-black">Data Analysis</h2>
+                <p class="text-sm text-gray-600">Utilize AI-driven analytics to make informed decisions faster.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Side -->
+    <div class="w-2/5 flex items-center justify-center bg-gray-100 right-side-animate">
+        <div class="p-8 bg-white shadow-lg rounded-lg w-96 text-center">
+            <h1 class="text-2xl font-bold mb-6">Register</h1>
+            <form method="post" action="{% url 'register' %}">
+                {% csrf_token %}
+                <div class="space-y-4">
+                    <input type="text" id="username" name="username" placeholder="Username" class="input input-bordered w-full border-2 border-gray-300 rounded-lg" required>
+                    <input type="email" id="email" name="email" placeholder="Email" class="input input-bordered w-full border-2 border-gray-300 rounded-lg" required>
+                    <input type="password" id="password" name="password" placeholder="Password" class="input input-bordered w-full border-2 border-gray-300 rounded-lg" required>
+                    <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm Password" class="input input-bordered w-full border-2 border-gray-300 rounded-lg" required>
+                    <button type="submit" class="btn bg-purple-700 hover:bg-purple-800 text-white w-4/6 mx-auto py-3 rounded-full">Register</button>
+                </div>
+            </form>
+            <a href="{% url 'login' %}" class="text-blue-600 hover:text-blue-800 block mt-4">Already have an account? Login</a>
+        </div>
+    </div>
+
+    <script>
+        document.querySelector('form').onsubmit = function() {
+            const password = document.getElementById('password').value;
+            const confirm = document.getElementById('confirm_password').value;
+            if (password !== confirm) {
+                alert('Passwords do not match.');
+                return false;
+            }
+            return true;
+        };
+    </script>
+</body>
+</html>

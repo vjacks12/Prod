@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paid Users Area</title>
+    <!-- Include TailwindCSS from CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Include FontAwesome for icons -->
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.css" rel="stylesheet">
+    <style>
+#sidebar {
+    width: 160px; /* Set fixed width */
+    height: 100%; /* Full height */
+    position: fixed; /* Fixed position */
+    left: 0; /* Align to the left */
+    top: 0; /* Align to the top */
+    overflow-x: hidden; /* Prevent horizontal overflow */
+    overflow-y: auto; /* Allow vertical scrolling */
+    background-color: #4b4263; /* Background color */
+    z-index: 1000; /* High z-index */
+    display: flex;
+    flex-direction: column; /* Ensure the sidebar is a column container */
+}
+
+#sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1; /* Allow it to fill the space */
+}
+
+#sidebar li {
+    width: 100%; /* Full width */
+    margin: 0; /* No margin */
+}
+
+#sidebar li a {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Align items to the left */
+    width: 100%; /* Full width */
+    padding: 12px 20px; /* Padding for clickable area */
+    text-decoration: none; /* No underline */
+    color: inherit; /* Inherit text color */
+    transition: background-color 0.3s ease; /* Background color transition for hover */
+}
+
+#sidebar li:hover {
+    background-color: #6D28D9; /* Hover background color */
+}
+
+#sidebar li i {
+    font-size: 1.5em; /* Icon size */
+    margin-right: 10px; /* Space between icon and text */
+}
+
+.logout {
+    margin-top: auto; /* Keep the logout at the bottom */
+    width: 100%; /* Full width */
+}
+
+
+        /* Additional styles for the main content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container h2 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: black; /* Changed to black */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            justify-items: center;
+        }
+
+        .video-container {
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 560px; /* YouTube video width */
+        }
+
+        .video-container h3 {
+            font-size: 32px;
+            color: #6D28D9;
+            margin-bottom: 10px;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+        }
+
+        .video-container iframe {
+            width: 100%;
+            height: 315px; /* YouTube video aspect ratio */
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-800 font-sans">
+    <!-- Sidebar -->
+    <div id="sidebar" class="h-full bg-purple-600 text-white fixed">
+        <ul>
+            <li><a href="{% url 'homepage' %}"><i class="fas fa-home"></i><span>Home</span></a></li>
+            <li><a href="{% url 'your_dashboard' %}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+            <li><a href="{% url 'analytics' %}"><i class="fas fa-chart-line"></i><span>Analytics</span></a></li>
+            <li><a href="{% url 'settings' %}"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+            <li class="logout"><a href="{% url 'logout' %}" class="flex items-center"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h2>Welcome to your Homepage</h2>
+        <div class="grid-container">
+            <div class="video-container">
+                <h3>Container 1</h3>
+                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <div class="video-container">
+                <h3>Container 2</h3>
+                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <div class="video-container">
+                <h3>Container 3</h3>
+                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <div class="video-container">
+                <h3>Container 4</h3>
+                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

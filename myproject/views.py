@@ -1,0 +1,240 @@
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from django.shortcuts import render, redirect
+from .models import Profile
+from django.contrib.auth.decorators import login_required
+
+def home_view(request):
+    return render(request, 'home.html')
+
+# Login View
+from django.contrib.auth import authenticate, login
+from django.shortcuts import redirect, render
+from .models import Profile
+
+def login_view(request):
+    if request.method == "POST":
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            try:
+                if user.profile.has_paid:
+                    return redirect('homepage')  # Redirect to homepage if paid
+                else:
+                    return redirect('dashboard')  # Redirect to dashboard if not paid
+            except Profile.DoesNotExist:
+                # Handle case where profile does not exist
+                return redirect('dashboard')
+        else:
+            return render(request, 'login.html', {'error': "Invalid username or password"})
+    return render(request, 'login.html')
+
+# Register View
+from django.contrib.auth.models import User
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+
+def register_view(request):
+    if request.method == "POST":
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if password == confirm_password:
+            if not User.objects.filter(username=username).exists():
+                if not User.objects.filter(email=email).exists():
+                    user = User.objects.create_user(username=username, email=email, password=password)
+                    user.save()
+                    # Explicitly specify the backend
+                    user.backend = 'django.contrib.auth.backends.ModelBackend'  # Adjust this if using a custom backend
+                    login(request, user)
+                    return redirect('dashboard')
+                else:
+                    return render(request, 'register.html', {'error': "Email already exists."})
+            else:
+                return render(request, 'register.html', {'error': "Username already exists."})
+        else:
+            return render(request, 'register.html', {'error': "Passwords do not match."})
+    return render(request, 'register.html')
+
+
+
+
+# Dashboard View
+def dashboard_view(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    return render(request, 'dashboard.html', {'stripe_key': STRIPE_PUBLIC_KEY})
+
+# Logout View
+def logout_view(request):
+    logout(request)
+    return redirect('home')
+
+import stripe
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.urls import reverse
+from django.http import JsonResponse
+from django.conf import settings
+import stripe
+import stripe
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
+from django.urls import reverse
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
+STRIPE_PUBLIC_KEY = 'pk_test_51P39Nd00kicGcPsBJgIRnoBMPZtFROKdjxoEudNyPWz70ye6Es8tUF76tKqomiYBeMkP2nuFDDBDFpUfDAhLhhN200t4R5F2Ei'
+
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
+from django.urls import reverse
+import stripe
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
+@login_required
+def stripe_payment(request):
+    if request.method == "POST":
+        try:
+            # Create a new Checkout Session for the order
+            checkout_session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                line_items=[
+                    {
+                        'price_data': {
+                            'currency': 'usd',
+                            'product_data': {
+                                'name': 'Test Purchase',
+                            },
+                            'unit_amount': 0,  # For example, $1.00 for testing
+                        },
+                        'quantity': 1,
+                    },
+                ],
+                mode='payment',
+                success_url=request.build_absolute_uri(reverse('homepage')) + '?session_id={CHECKOUT_SESSION_ID}',
+                cancel_url=request.build_absolute_uri(reverse('dashboard')),
+            )
+            # Redirect to the URL for the Checkout Session
+            return redirect(checkout_session.url)
+        except stripe.error.StripeError as e:
+            # Handle Stripe errors
+            return redirect('dashboard', {'error': str(e)})
+    return redirect('dashboard')
+
+
+
+@login_required
+def homepage_view(request):
+    session_id = request.GET.get('session_id')
+    if session_id:
+        session = stripe.checkout.Session.retrieve(session_id)
+        if session.payment_status == 'paid':
+            profile, _ = Profile.objects.get_or_create(user=request.user)
+            profile.has_paid = True
+            profile.save()
+            return render(request, 'homepage.html')
+    # Check if the user has already paid
+    try:
+        if request.user.profile.has_paid:
+            return render(request, 'homepage.html')
+        else:
+            return redirect('dashboard')
+    except Profile.DoesNotExist:
+        return redirect('dashboard')
+    
+
+
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def your_dashboard(request):
+    try:
+        # Check if the user has paid
+        if request.user.profile.has_paid:
+            return render(request, 'yourdashboard.html')
+        else:
+            return redirect('homepage')  # Redirect to homepage or any other page for unpaid users
+    except Profile.DoesNotExist:
+        # Handle case where the profile does not exist
+        return redirect('register')  # Or guide them to complete their profile/payment setup
+    
+@login_required
+def settings_view(request):
+    if not request.user.profile.has_paid:
+        return redirect('homepage')
+    return render(request, 'settings.html')
+
+@login_required
+def analytics_view(request):
+    if not request.user.profile.has_paid:
+        return redirect('homepage')
+    return render(request, 'analytics.html')
+
+
+
+import os
+import ffmpeg
+from pytube import YouTube
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from tempfile import NamedTemporaryFile
+
+@login_required
+def process_video(request):
+    if request.method == "POST":
+        video_url = request.POST.get('video_url')
+        if not video_url:
+            return HttpResponse("No video URL provided", status=400)
+
+        try:
+            yt = YouTube(video_url)
+            stream = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first()
+        except Exception as e:
+            return HttpResponse(f"Failed to process video URL: {str(e)}", status=400)
+
+        with NamedTemporaryFile(delete=False, suffix='.mp4') as temp_video:
+            stream.download(output_path=os.path.dirname(temp_video.name), filename=os.path.basename(temp_video.name))
+            temp_video_path = temp_video.name
+
+        # Process the video to make it vertical
+        output_path = temp_video_path.replace('.mp4', '_vertical.mp4')
+        try:
+            (
+                ffmpeg
+                .input(temp_video_path)
+                .filter('scale', 'iw*9/16', 'ih')
+                .filter('pad', 'iw', 'ih', '(ow-iw)/2', '(oh-ih)/2')
+                .output(output_path)
+                .run()
+            )
+        except ffmpeg.Error as e:
+            os.remove(temp_video_path)
+            return HttpResponse(f"FFmpeg error: {e.stderr.decode('utf-8') if e.stderr else str(e)}", status=500)
+
+        # Clean up the original video
+        os.remove(temp_video_path)
+
+        # Serve the processed video
+        with open(output_path, 'rb') as f:
+            response = HttpResponse(f.read(), content_type='video/mp4')
+            response['Content-Disposition'] = f'attachment; filename={os.path.basename(output_path)}'
+            os.remove(output_path)
+            return response
+
+    return redirect('your_dashboard')
+
+

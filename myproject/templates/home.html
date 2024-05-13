@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClipIt - AI-driven Video Editing for Social Media</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<style>
+  /* Custom hover styles for buttons */
+  .hover-effect:hover {
+    background-color: #d6d6ff; /* Light purple hover effect */
+    color: white;
+  }
+  /* Custom animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in {
+    animation: fadeIn 1s ease-out;
+  }
+  @keyframes slideInFromLeft {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+  }
+  .slide-in-left {
+    animation: slideInFromLeft 0.5s ease-out;
+  }
+  @keyframes slideInFromRight {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+  .slide-in-right {
+    animation: slideInFromRight 0.5s ease-out;
+  }
+  
+  /* Footer styling */
+  footer {
+    background: #ffffff; /* White background for the footer */
+    color: #333333; /* Dark text color for readability on light background */
+    padding: 40px 0;
+    line-height: 1.75;
+  }
+  footer a {
+    color: #6b46c1; /* Adjusted to a purple that fits the theme */
+    text-decoration: none;
+  }
+  footer a:hover {
+    color: #9f7aea; /* Lighter purple for hover */
+  }
+  .emoji {
+    font-size: 3rem; /* Emojis are twice as large */
+  }
+  /* Navbar styling */
+  .navbar {
+    position: fixed;
+    top: 30px; /* Set 30px from the top */
+    left: 0;
+    right: 0;
+    z-index: 50;
+  }
+  .navbar-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: white;
+  border-radius: 50px; /* Assuming you want fully rounded ends */
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.1); /* Example shadow */
+  max-width: max-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+  .navbar-inner .space-x-4 > a {
+    padding-left: 30px; /* Increased left padding */
+    padding-right: 30px; /* Increased right padding */
+  }
+
+  /* Apply margin to only the 'Features' button */
+  .navbar-inner .space-x-4 > a[href="#features"] {
+    margin-left: 35px; /* Adds 10px margin to the left of the 'Features' button */
+  }
+
+  /* Additional styles for FAQ section */
+  .faq-item {
+    border: 2px solid #e2e8f0; /* Light gray border */
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .faq-item h3 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Ensures space between text and arrow */
+    cursor: pointer;
+    font-size: 18px; /* Larger text for visibility */
+  }
+
+  .faq-item p {
+    margin-top: 10px;
+    display: none; /* Hide text by default */
+    color: #4a5568; /* Dark gray for text */
+  }
+
+  .faq-item.active p {
+    display: block; /* Show text when active */
+  }
+
+  .arrow {
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .active .arrow {
+    transform: rotate(90deg); /* Rotates arrow when active */
+  }
+  /* Additional styles for adjusted layout */
+#trusted-by div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 200px;
+}
+
+/* SVG arrow styling for a diagonal, animated movement */
+.animate-arrow {
+    animation: arrow-up 2s infinite alternate ease-in-out;
+    color: #32CD32; /* Bright green, similar to LimeGreen */
+}
+
+@keyframes arrow-up {
+    from {
+        transform: translateX(50%) translateY(0);
+    }
+    to {
+        transform: translateX(-120%) translateY(-270px); /* Increased travel distance */
+        color: #32CD32; /* Ensure color is bright green throughout */
+    }
+}
+
+/* Additional responsive adjustments if needed */
+@media screen and (max-width: 768px) {
+    #trusted-by {
+        flex-direction: column;
+        text-align: center;
+    }
+    .arrow-up {
+        right: 50%;
+        top: auto;
+        bottom: -20px;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+.highlight {
+    background-color: #32CD32; /* Bright lime green background */
+    color: white; /* White text color */
+    padding: 0.2em 0.4em; /* Padding around the text */
+    border-radius: 0.25em; /* Slightly rounded corners for a smooth look */
+    box-decoration-break: clone; /* Ensures the background extends across line breaks */
+}
+
+#trusted-by .text-center div.spacing-20 h2 {
+    margin-bottom: 20px; /* Increased line spacing between the lines, only for right side */
+}
+
+
+
+
+
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      
+      if (document.getElementById(this.getAttribute('href').substring(1))) {
+        const scrollTarget = document.querySelector(this.getAttribute('href'));
+        const topOffset = 40; // height of the offset
+        const elementPosition = scrollTarget.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - topOffset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth"
+        });
+      }
+    });
+  });
+});
+
+  function toggleAccordion(id) {
+  var element = document.getElementById(id);
+  var item = element.parentNode; // Get the parent element of the p tag
+
+  if (item.classList.contains('active')) {
+    item.classList.remove('active');
+  } else {
+    // Close all open items first
+    document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('active'));
+    item.classList.add('active');
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    const counter = document.getElementById('user-count');
+    let count = 0;
+    const finalCount = 2500;
+    const increment = 50; // Adjust speed and increment size as needed
+
+    function updateCount() {
+        count += increment;
+        if (count > finalCount) {
+            counter.textContent = finalCount + '+ users';
+        } else {
+            counter.textContent = count + '+ users';
+            setTimeout(updateCount, 30); // Adjust timing for different speeds
+        }
+    }
+    updateCount();
+});
+</script>
+</head>
+<body class="bg-white text-gray-800">
+
+<!-- Navbar -->
+<div class="navbar">
+    <div class="flex navbar-inner">
+      <a href="#home" class="text-xl font-bold text-gray-800 hover:text-purple-500">ClipIt</a>
+      <div class="space-x-4">
+        <a href="#features" class="hover-effect px-3 py-2 rounded-md text-sm font-medium">Features</a>
+        <a href="#pricing" class="hover-effect px-3 py-2 rounded-md text-sm font-medium">Pricing</a>
+        <a href="#about" class="hover-effect px-3 py-2 rounded-md text-sm font-medium">About</a>
+        <a href="#faq" class="hover-effect px-3 py-2 rounded-md text-sm font-medium">FAQ</a>
+        <a href="login" class="bg-purple-600 text-white px-3 py-2 rounded-md hover:bg-purple-700">Login</a>
+        <a href="register" class="bg-purple-600 text-white px-3 py-2 rounded-md hover:bg-purple-700">Sign Up</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Hero Section -->
+  <section id="home" class="pt-40 md:pt-60 pb-10 md:pb-20 text-center">
+    <h1 class="text-5xl font-bold text-gray-800 mb-4 fade-in">Simplify Your Video Editing</h1>
+    <p class="text-xl text-gray-600 mx-auto leading-relaxed max-w-xl fade-in">ClipIt is your AI-powered partner for rapidly editing short-form video content for platforms like TikTok, YouTube, Instagram, and Facebook.</p>
+    <div class="mt-10">
+      <a href="#get-started" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg inline-block animate-bounce">Get Started</a>
+    </div>
+  </section>
+
+<!-- Section Under Hero -->
+<section id="trusted-by" class="flex justify-between items-center py-20 bg-white" style="margin-top: -55px;">
+    <div class="text-center w-1/2">
+        <h2 class="text-3xl font-bold text-gray-800">Trusted By</h2>
+        <p class="text-4xl font-bold text-purple-600" id="user-count">0+ users</p>
+    </div>
+    <div class="text-center w-1/2 relative">
+        <div class="spacing-20">
+            <h2 class="text-3xl font-bold text-gray-800 block relative z-10">Finding <span class="highlight">Trending</span> Content</h2>
+            <h2 class="text-3xl font-bold text-gray-800 block relative z-10"><span class="highlight">Before</span> its <span class="highlight">Trending</span></h2>
+        </div>
+        <svg class="arrow-up animate-arrow w-12 h-12 absolute top-full right-1/2 transform translate-x-1/2 -translate-y-full" fill="none" stroke="#32CD32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+        </svg>
+    </div>
+</section>
+
+
+
+<!-- Features Section -->
+<section id="features" class="py-20">
+  <div class="container mx-auto px-5">
+    <h2 class="text-4xl font-bold text-center text-gray-800 mb-10 slide-in-right">Features</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
+      <!-- Updated feature listings with larger emojis -->
+      <div class="p-5 shadow-lg rounded-lg hover:shadow-xl transition duration-300 slide-in-left">
+        <div class="emoji">🚀</div>
+        <h3 class="text-2xl font-bold mb-3">Fast Editing</h3>
+        <p class="text-gray-600">Automate cutting, trimming, and adding transitions to create videos faster than ever.</p>
+      </div>
+      <div class="p-5 shadow-lg rounded-lg hover:shadow-xl transition duration-300 slide-in-left">
+        <div class="emoji">🧠</div>
+        <h3 class="text-2xl font-bold mb-3">AI Optimization</h3>
+        <p class="text-gray-600">Optimize video content for different platforms ensuring maximum engagement.</p>
+      </div>
+      <div class="p-5 shadow-lg rounded-lg hover:shadow-xl transition duration-300 slide-in-left">
+        <div class="emoji">⚙️</div>
+        <h3 class="text-2xl font-bold mb-3">Custom Presets</h3>
+        <p class="text-gray-600">Use custom presets for quick edits, tailored to your style and preferences.</p>
+      </div>
+      <div class="p-5 shadow-lg rounded-lg hover:shadow-xl transition duration-300 slide-in-left">
+        <div class="emoji">🎨</div>
+        <h3 class="text-2xl font-bold mb-3">Creative Effects</h3>
+        <p class="text-gray-600">Add unique visual effects and filters to enhance your videos creatively.</p>
+      </div>
+      <div class="p-5 shadow-lg rounded-lg hover:shadow-xl transition duration-300 slide-in-left">
+        <div class="emoji">🎵</div>
+        <h3 class="text-2xl font-bold mb-3">Audio Tools</h3>
+        <p class="text-gray-600">Integrate music, adjust audio levels, and add voiceovers with ease.</p>
+      </div>
+      <div class="p-5 shadow-lg rounded-lg hover:shadow-xl transition duration-300 slide-in-left">
+        <div class="emoji">📱</div>
+        <h3 class="text-2xl font-bold mb-3">Mobile Ready</h3>
+        <p class="text-gray-600">Edit on the go with our mobile app, perfect for quick adjustments anytime, anywhere.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing Section -->
+<section id="pricing" class="py-20">
+    <div class="container mx-auto px-5">
+      <h2 class="text-4xl font-bold text-center text-gray-800 mb-10">Choose Your Plan</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-10 justify-center items-center">
+        <!-- Basic Plan $7/Month -->
+        <div class="max-w-sm mx-auto bg-white rounded-lg border border-purple-200 shadow-lg overflow-hidden">
+          <div class="bg-purple-600 p-5">
+            <h3 class="text-2xl font-bold text-white mb-2">Basic Monthly Plan</h3>
+            <h2 class="text-4xl font-bold text-white">$7<span class="text-lg">/month</span></h2>
+          </div>
+          <div class="p-5">
+            <p class="text-gray-600 mb-5">Ideal for personal projects and small-scale editing needs. Get access to basic editing tools and templates.</p>
+            <a href="#buy-now" class="block text-center bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">Subscribe Now</a>
+          </div>
+        </div>
+        <!-- Lifetime Access Plan $29 -->
+        <div class="max-w-sm mx-auto bg-white rounded-lg border border-purple-200 shadow-lg overflow-hidden">
+          <div class="bg-purple-600 p-5">
+            <h3 class="text-2xl font-bold text-white mb-2">Lifetime Access</h3>
+            <h2 class="text-4xl font-bold text-white">$29</h2>
+          </div>
+          <div class="p-5">
+            <p class="text-gray-600 mb-5">One-time payment for lifetime access to all current and future features without any additional costs.</p>
+            <a href="#buy-now" class="block text-center bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">Purchase Now</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  
+
+<!-- About Section -->
+<section id="about" class="py-20 bg-white">
+  <div class="container mx-auto px-5">
+    <h2 class="text-4xl font-bold text-center text-gray-800 mb-10">About Us</h2>
+    <p class="text-xl text-gray-600">
+      ClipIt is the leading AI-powered video editing tool designed to streamline the production of short-form content for social media platforms. With innovative features like automated editing and AI-driven optimizations, ClipIt helps content creators maximize their productivity and enhance their creativity.
+    </p>
+  </div>
+</section>
+
+<!-- FAQ Section -->
+<section id="faq" class="py-20 bg-white">
+    <div class="container mx-auto px-5">
+      <h2 class="text-4xl font-bold text-center text-gray-800 mb-10">Frequently Asked Questions</h2>
+      <div class="accordion" id="faqAccordion">
+        <div class="faq-item" onclick="toggleAccordion('faq1')">
+          <h3>What file formats do you support? <span class="arrow">➤</span></h3>
+          <p id="faq1" class="text-gray-600">We support all major video file formats, including MP4, AVI, and MOV.</p>
+        </div>
+        <div class="faq-item" onclick="toggleAccordion('faq2')">
+          <h3>Can I edit videos on mobile devices? <span class="arrow">➤</span></h3>
+          <p id="faq2" class="text-gray-600">Yes, our app is available on both Android and iOS devices, allowing you to edit videos on the go.</p>
+        </div>
+        <div class="faq-item" onclick="toggleAccordion('faq3')">
+          <h3>Do you offer free trials? <span class="arrow">➤</span></h3>
+          <p id="faq3" class="text-gray-600">Yes, we offer a 7-day free trial with access to all features so you can evaluate our service.</p>
+        </div>
+        <div class="faq-item" onclick="toggleAccordion('faq4')">
+          <h3>How do I cancel my subscription? <span class="arrow">➤</span></h3>
+          <p id="faq4" class="text-gray-600">You can cancel your subscription at any time through your account settings on our website.</p>
+        </div>
+        <div class="faq-item" onclick="toggleAccordion('faq5')">
+          <h3>What customer support options are available? <span class="arrow">➤</span></h3>
+          <p id="faq5" class="text-gray-600">We offer customer support via email, live chat, and phone. Our support team is available 24/7 to assist you.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  
+
+<!-- Footer -->
+<footer class="text-gray-800 text-center p-5">
+  <div class="container mx-auto py-8">
+    <div class="flex justify-between items-center">
+      <p>© 2024 ClipIt. All rights reserved.</p>
+      <div>
+        <a href="#about">About Us</a> |
+        <a href="#privacy">Privacy Policy</a> |
+        <a href="#terms">Terms of Service</a>
+      </div>
+      <p>Follow us on <a href="https://twitter.com/clipit">Twitter</a></p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

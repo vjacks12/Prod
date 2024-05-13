@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Dashboard</title>
+    <!-- Include TailwindCSS from CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Include FontAwesome for icons -->
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.css" rel="stylesheet">
+    <style>
+        #sidebar {
+            width: 160px; /* Set fixed width */
+            height: 100%; /* Full height */
+            position: fixed; /* Fixed position */
+            left: 0; /* Align to the left */
+            top: 0; /* Align to the top */
+            overflow-x: hidden; /* Prevent horizontal overflow */
+            overflow-y: auto; /* Allow vertical scrolling */
+            background-color: #4b4263; /* Background color */
+            z-index: 1000; /* High z-index */
+            display: flex;
+            flex-direction: column; /* Ensure the sidebar is a column container */
+        }
+
+        #sidebar ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            flex-grow: 1; /* Allow it to fill the space */
+        }
+
+        #sidebar li {
+            width: 100%; /* Full width */
+            margin: 0; /* No margin */
+        }
+
+        #sidebar li a {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start; /* Align items to the left */
+            width: 100%; /* Full width */
+            padding: 12px 20px; /* Padding for clickable area */
+            text-decoration: none; /* No underline */
+            color: inherit; /* Inherit text color */
+            transition: background-color 0.3s ease; /* Background color transition for hover */
+        }
+
+        #sidebar li:hover {
+            background-color: #6D28D9; /* Hover background color */
+        }
+
+        #sidebar li i {
+            font-size: 1.5em; /* Icon size */
+            margin-right: 10px; /* Space between icon and text */
+        }
+
+        .logout {
+            margin-top: auto; /* Keep the logout at the bottom */
+            width: 100%; /* Full width */
+        }
+
+        .container {
+            margin-left: 200px; /* Offset for sidebar */
+            padding: 20px;
+        }
+
+        .container h2 {
+            text-align: center;
+            font-size: 48px;
+            color: black;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .clip-editor-container {
+            width: 45%;
+            position: fixed;
+            top: 50%;
+            left: 200px; /* Offset for sidebar */
+            transform: translateY(-50%);
+        }
+
+        .trending-clips-container {
+            width: 45%;
+            position: absolute;
+            top: 250px;
+            right: 0;
+            margin-top: 20px;
+        }
+
+        .trending-clips-container iframe {
+            margin-bottom: 10px; /* Reduce padding between iframes */
+        }
+
+        .trending-clips-container button:hover {
+            background-color: limegreen;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-800 font-sans">
+    <!-- Sidebar -->
+    <div id="sidebar" class="bg-purple-600 text-white fixed">
+        <ul>
+            <li><a href="{% url 'homepage' %}"><i class="fas fa-home"></i><span>Home</span></a></li>
+            <li><a href="{% url 'your_dashboard' %}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+            <li><a href="{% url 'analytics' %}"><i class="fas fa-chart-line"></i><span>Analytics</span></a></li>
+            <li><a href="{% url 'settings' %}"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+            <li class="logout"><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h2>Your Dashboard</h2>
+    </div>
+
+    <!-- Clip Editor Container -->
+    <div class="clip-editor-container">
+        <form action="{% url 'process_video' %}" method="post">
+            {% csrf_token %}
+            <div class="bg-white shadow-lg p-4 rounded-lg mx-auto max-w-md">
+                <h2 class="text-lg font-semibold text-center mb-4">Clip Editor</h2>
+                <input
+                    type="text"
+                    name="video_url"
+                    placeholder="Enter a Link"
+                    class="w-full p-2 border border-zinc-300 rounded-md focus:outline-none focus:ring focus:ring-blue-500"
+                />
+                <button class="bg-blue-500 text-white p-2 mt-2 rounded-lg w-full" type="submit">Edit</button>
+                <button
+                    class="bg-zinc-200 text-zinc-700 p-2 mt-2 rounded-lg w-full flex justify-center items-center"
+                    type="button"
+                >
+                    More Options
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-4 w-4 ml-1"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                    >
+                        <path fill-rule="evenodd" d="M10 12a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                        <path fill-rule="evenodd" d="M10 18a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                        <path fill-rule="evenodd" d="M10 6a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Trending Clips Container -->
+    <div class="trending-clips-container">
+        <div class="bg-white dark:bg-zinc-800 shadow-lg p-4 rounded-lg mx-auto max-w-md">
+            <h2 class="text-lg font-semibold text-center mb-4">Trending Clips</h2>
+            <div class="flex justify-between gap-4">
+                <button
+                    class="bg-transparent border border-black dark:border-white text-blue-500 dark:text-white p-2 rounded-lg flex-1 transition-colors hover:bg-lime-500 hover:text-white"
+                >
+                    1 Hour
+                </button>
+                <button
+                    class="bg-transparent border border-black dark:border-white text-blue-500 dark:text-white p-2 rounded-lg flex-1 transition-colors hover:bg-lime-500 hover:text-white"
+                >
+                    1 Day
+                </button>
+                <button
+                    class="bg-transparent border border-black dark:border-white text-blue-500 dark:text-white p-2 rounded-lg flex-1 transition-colors hover:bg-lime-500 hover:text-white"
+                >
+                    1 Week
+                </button>
+                <button
+                    class="bg-transparent border border-black dark:border-white text-blue-500 dark:text-white p-2 rounded-lg flex-1 transition-colors hover:bg-lime-500 hover:text-white"
+                >
+                    1 Month
+                </button>
+            </div>
+            <div class="flex items-center justify-center mt-4">
+                <button
+                    class="flex items-center bg-transparent border border-black dark:border-white text-blue-500 dark:text-white p-2 rounded-lg transition-colors hover:bg-lime-500 hover:text-white"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5 mr-2"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                    >
+                        <path
+                            fill-rule="evenodd"
+                            d="M10 2a8 8 0 0 0-8 8h2a6 6 0 0 1 6-6V2zm-2 2A6 6 0 0 1 16 8h-2a4 4 0 0 0-4-4V2zM8 18a6 6 0 0 1-6-6H0a8 8 0 0 0 8 8v-2zm10-2a8 8 0 0 0 8-8h-2a6 6 0 0 1-6 6v2z"
+                        />
+                    </svg>
+                    Refresh Clips
+                </button>
+            </div>
+            <div class="grid grid-cols-1 gap-2 mt-4">
+                <iframe
+                    src="https://placehold.co/640x360"
+                    class="w-full h-96 rounded-lg"
+                    frameborder="0"
+                ></iframe>
+                <iframe
+                    src="https://placehold.co/640x360"
+                    class="w-full h-96 rounded-lg"
+                    frameborder="0"
+                ></iframe>
+                <iframe
+                    src="https://placehold.co/640x360"
+                    class="w-full h-96 rounded-lg"
+                    frameborder="0"
+                ></iframe>
+                <iframe
+                    src="https://placehold.co/640x360"
+                    class="w-full h-96 rounded-lg"
+                    frameborder="0"
+                ></iframe>
+                <iframe
+                    src="https://placehold.co/640x360"
+                    class="w-full h-96 rounded-lg"
+                    frameborder="0"
+                ></iframe>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
