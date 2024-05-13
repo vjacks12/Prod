@@ -21,7 +21,7 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = [
-    'your-render-service.onrender.com',  # Add your Render.com domain here
+    'prod-gugy.onrender.com',  # Add your Render.com domain here
     '127.0.0.1',  # Add localhost for testing
     'localhost',
 ]
