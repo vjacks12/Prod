@@ -36,7 +36,7 @@ SECRET_KEY = env('SECRET_KEY', default='django-insecure-bj6kd#m+30+dtb*rv2zq+hp9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG', default=False)
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['your-render-service.onrender.com'])
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['127.0.0.1', '.your-render-service.onrender.com'])
 
 # Application definition
 
