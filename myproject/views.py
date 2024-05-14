@@ -185,7 +185,7 @@ def process_video(request):
                 .filter('scale', 'iw*9/16', 'ih')
                 .filter('pad', 'iw', 'ih', '(ow-iw)/2', '(oh-ih)/2')
                 .output(output_path)
-                .run()
+                .run(overwrite_output=True)
             )
         except ffmpeg.Error as e:
             os.remove(temp_video_path)
@@ -202,5 +202,6 @@ def process_video(request):
             return response
 
     return redirect('your_dashboard')
+
 
 
