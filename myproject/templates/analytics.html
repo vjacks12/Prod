@@ -38,4 +38,44 @@
 #sidebar li a {
     display: flex;
     align-items: center;
-    justify-content: flex-start; /* Align 
+    justify-content: flex-start; /* Align items to the left */
+    width: 100%; /* Full width */
+    padding: 12px 20px; /* Padding for clickable area */
+    text-decoration: none; /* No underline */
+    color: inherit; /* Inherit text color */
+    transition: background-color 0.3s ease; /* Background color transition for hover */
+}
+
+#sidebar li:hover {
+    background-color: #6D28D9; /* Hover background color */
+}
+
+#sidebar li i {
+    font-size: 1.5em; /* Icon size */
+    margin-right: 10px; /* Space between icon and text */
+}
+
+.logout {
+    margin-top: auto; /* Keep the logout at the bottom */
+    width: 100%; /* Full width */
+}</style>
+</head>
+<body class="bg-white text-gray-800 font-sans">
+    <!-- Sidebar -->
+    <div id="sidebar" class="h-full bg-purple-600 text-white fixed">
+        <ul>
+            <li><a href="{% url 'homepage' %}"><i class="fas fa-home"></i><span>Home</span></a></li>
+            <li><a href="{% url 'your_dashboard' %}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+            <li><a href="{% url 'analytics' %}"><i class="fas fa-chart-line"></i><span>Analytics</span></a></li>
+            <li><a href="{% url 'settings' %}"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+            <li class="logout"><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h2>Analytics Page</h2>
+        <p>View detailed analytics and insights here.</p>
+    </div>
+</body>
+</html>
