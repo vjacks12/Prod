@@ -7,11 +7,11 @@ from django.conf import settings
 from django.urls import reverse
 import stripe
 from .models import Profile
-import os
-import ffmpeg
-from pytube import YouTube
 from tempfile import NamedTemporaryFile
+import time
+import random
 from django.views.decorators.csrf import csrf_exempt
+from pytube import YouTube  # Ensure this import is present
 
 # Initialize Stripe API key
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -135,17 +135,6 @@ def analytics_view(request):
         return redirect('homepage')
     return render(request, 'analytics.html')
 
-import os
-import ffmpeg
-from pytube import YouTube
-from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from tempfile import NamedTemporaryFile
-import time
-import random
-
 def fetch_youtube_stream(video_url, max_retries=5):
     for attempt in range(max_retries):
         try:
@@ -160,6 +149,8 @@ def fetch_youtube_stream(video_url, max_retries=5):
                 raise e
     raise Exception("Failed to fetch YouTube stream after multiple attempts")
 
+from .tasks import process_video_task
+
 @login_required
 def process_video(request):
     if request.method == "POST":
@@ -167,41 +158,7 @@ def process_video(request):
         if not video_url:
             return HttpResponse("No video URL provided", status=400)
 
-        try:
-            stream = fetch_youtube_stream(video_url)
-        except Exception as e:
-            return HttpResponse(f"Failed to process video URL: {str(e)}", status=400)
-
-        with NamedTemporaryFile(delete=False, suffix='.mp4') as temp_video:
-            stream.download(output_path=os.path.dirname(temp_video.name), filename=os.path.basename(temp_video.name))
-            temp_video_path = temp_video.name
-
-        # Process the video to make it vertical
-        output_path = temp_video_path.replace('.mp4', '_vertical.mp4')
-        try:
-            (
-                ffmpeg
-                .input(temp_video_path)
-                .filter('scale', 'iw*9/16', 'ih')
-                .filter('pad', 'iw', 'ih', '(ow-iw)/2', '(oh-ih)/2')
-                .output(output_path)
-                .run(overwrite_output=True)
-            )
-        except ffmpeg.Error as e:
-            os.remove(temp_video_path)
-            return HttpResponse(f"FFmpeg error: {e.stderr.decode('utf-8') if e.stderr else str(e)}", status=500)
-
-        # Clean up the original video
-        os.remove(temp_video_path)
-
-        # Serve the processed video
-        with open(output_path, 'rb') as f:
-            response = HttpResponse(f.read(), content_type='video/mp4')
-            response['Content-Disposition'] = f'attachment; filename={os.path.basename(output_path)}'
-            os.remove(output_path)
-            return response
+        result = process_video_task.delay(video_url)
+        return HttpResponse(f"Video processing started. Task ID: {result.id}")
 
     return redirect('your_dashboard')
-
-
-
