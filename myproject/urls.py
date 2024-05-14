@@ -35,4 +35,13 @@ urlpatterns = [
     path('pay/', views.stripe_payment, name='stripe_payment'),
     path('stripe-payment/', stripe_payment, name='stripe_payment'),
     path('homepage/', homepage_view, name='homepage'),  # Make sure this line exists
-    path('y
+    path('yourdashboard/', views.your_dashboard, name='your_dashboard'),
+    path('settings/', views.settings_view, name='settings'),
+    path('analytics/', views.analytics_view, name='analytics'),
+    path('process-video/', views.process_video, name='process_video'),
+
+
+]
+
+
+
