@@ -1,0 +1,9 @@
+services:
+  - name: your-service-name
+    type: web
+    env: python
+    buildCommand: |
+      apt-get update && apt-get install -y ffmpeg
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
+    startCommand: gunicorn myproject.wsgi --log-file -

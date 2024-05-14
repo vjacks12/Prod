@@ -135,24 +135,34 @@ def analytics_view(request):
         return redirect('homepage')
     return render(request, 'analytics.html')
 
-@csrf_exempt
+import os
+import ffmpeg
+from pytube import YouTube
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from tempfile import NamedTemporaryFile
+import time
+
 @login_required
 def process_video(request):
     if request.method == "POST":
         video_url = request.POST.get('video_url')
         if not video_url:
-            return JsonResponse({"error": "No video URL provided"}, status=400)
+            return HttpResponse("No video URL provided", status=400)
 
         try:
             yt = YouTube(video_url)
             stream = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first()
         except Exception as e:
-            return JsonResponse({"error": f"Failed to process video URL: {str(e)}"}, status=400)
+            return HttpResponse(f"Failed to process video URL: {str(e)}", status=400)
 
         with NamedTemporaryFile(delete=False, suffix='.mp4') as temp_video:
             stream.download(output_path=os.path.dirname(temp_video.name), filename=os.path.basename(temp_video.name))
             temp_video_path = temp_video.name
 
+        # Process the video to make it vertical
         output_path = temp_video_path.replace('.mp4', '_vertical.mp4')
         try:
             (
@@ -165,10 +175,12 @@ def process_video(request):
             )
         except ffmpeg.Error as e:
             os.remove(temp_video_path)
-            return JsonResponse({"error": f"FFmpeg error: {e.stderr.decode('utf-8') if e.stderr else str(e)}"}, status=500)
+            return HttpResponse(f"FFmpeg error: {e.stderr.decode('utf-8') if e.stderr else str(e)}", status=500)
 
+        # Clean up the original video
         os.remove(temp_video_path)
 
+        # Serve the processed video
         with open(output_path, 'rb') as f:
             response = HttpResponse(f.read(), content_type='video/mp4')
             response['Content-Disposition'] = f'attachment; filename={os.path.basename(output_path)}'
@@ -176,3 +188,4 @@ def process_video(request):
             return response
 
     return redirect('your_dashboard')
+
