@@ -16,3 +16,4 @@ stripe==9.5.0
 typing_extensions==4.11.0
 urllib3==2.2.1
 django-environ==0.10.0
+celery==5.2.7
