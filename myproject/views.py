@@ -144,6 +144,21 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from tempfile import NamedTemporaryFile
 import time
+import random
+
+def fetch_youtube_stream(video_url, max_retries=5):
+    for attempt in range(max_retries):
+        try:
+            yt = YouTube(video_url)
+            stream = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first()
+            return stream
+        except Exception as e:
+            if "HTTP Error 429" in str(e):
+                sleep_time = (2 ** attempt) + random.uniform(0, 1)
+                time.sleep(sleep_time)
+            else:
+                raise e
+    raise Exception("Failed to fetch YouTube stream after multiple attempts")
 
 @login_required
 def process_video(request):
@@ -153,8 +168,7 @@ def process_video(request):
             return HttpResponse("No video URL provided", status=400)
 
         try:
-            yt = YouTube(video_url)
-            stream = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first()
+            stream = fetch_youtube_stream(video_url)
         except Exception as e:
             return HttpResponse(f"Failed to process video URL: {str(e)}", status=400)
 
@@ -188,4 +202,5 @@ def process_video(request):
             return response
 
     return redirect('your_dashboard')
+
 
